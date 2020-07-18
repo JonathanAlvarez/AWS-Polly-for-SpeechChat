@@ -3,7 +3,7 @@ window.addEventListener("load", () =>
     setTimeout(() => {
         var js = document.createElement("script");
         js.type = "text/javascript";
-        js.setAttribute("src", "https://raw.githubusercontent.com/kOFReadie/Twitch-TTS-Browser-Extention/master/Extention/tts.js");
+        js.setAttribute("src", "https://cdn.jsdelivr.net/gh/kOFReadie/Twitch-TTS-Browser-Extention/Extention/tts.js");
         document.head.appendChild(js);
     }, 1000);
 });
