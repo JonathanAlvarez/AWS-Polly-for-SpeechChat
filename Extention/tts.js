@@ -3,10 +3,14 @@ function testing()
     
 }
 
+const urlParams = new URLSearchParams(location.search);
 var messagesToRead = [];
+let ttsVoice;
 
 function initialiseScript()
 {
+    ttsVoice = urlParams.has("voice") ? urlParams.get("voice") : "Brian";
+    
     testing();
     createTTSPlayer();
     createVolumeSlider();
@@ -44,7 +48,7 @@ function handleRequests()
 async function playTTS()
 {
     //Set TTS source to most recent message, ADD USER CUSTOMISATION
-    document.getElementById("source").setAttribute("src", "https://api.streamelements.com/kappa/v2/speech?voice=Brian&text=" + encodeURIComponent(messagesToRead[0].trim()));
+    document.getElementById("source").setAttribute("src", "https://api.streamelements.com/kappa/v2/speech?voice=" + ttsVoice + "&text=" + encodeURIComponent(messagesToRead[0].trim()));
     let audio = document.getElementById("audio");
     audio.load();
     audio.play();
@@ -69,7 +73,13 @@ function createTTSPlayer()
     });
 
     //If there is a problem with the TTS, reload the page
-    mp3Player.addEventListener("error", (exception) => { location.reload(); });
+    mp3Player.addEventListener("error", (exception) =>
+    {
+        console.log(exception);
+        alert("You probable need to verify on the tts api that you are not a robot.");
+        window.open("https://api.streamelements.com/kappa/v2/speech?voice=Brian&text=Verifying%20that%20I%27m%20not%20a%20bot", "_blank");
+        location.reload();
+    });
 }
 
 function createVolumeSlider()
