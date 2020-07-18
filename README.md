@@ -1,5 +1,5 @@
 # Twitch TTS Browser Extention
-Reads out twitch chat from the popout window.
+Reads out twitch chat from the popout window, e.g. https://www.twitch.tv/popout/kof_readie/chat.
 
 **If you notice that the TTS isn't working then go [here](https://api.streamelements.com/kappa/v2/speech?voice=Brian&text=Verifying%20that%20I%27m%20not%20a%20bot) and prove that you are not a robot.**
 
