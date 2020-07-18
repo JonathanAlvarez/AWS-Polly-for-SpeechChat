@@ -8,7 +8,7 @@ This should update automatically as the extention injects the javascript in this
 ## **Installation:**
 ### Method 1 - CRX web extention:
 This is the easiest method to use, go and download my latest [release](https://github.com/kOFReadie/Twitch-TTS-Browser-Extention/releases/) and then open it in your browser.  
-If it disallows the installation then proceed to method 2.
+If it disallows the installation then proceed to [method 2](#method-2---script-manager-extention).
 
 ### Method 2 - Script manager extention:
 Go ahead and install a script manager extention of your choice e.g. [Tampermonkey](https://chrome.google.com/webstore/detail/tampermonkey-beta/gcalenpjmijncebpfijmoaglllgpjagf).  
