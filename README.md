@@ -10,7 +10,7 @@ This should update automatically as the extention injects the javascript in this
 This is the easiest method to use, go and download my latest [release](https://github.com/kOFReadie/Twitch-TTS-Browser-Extention/releases/) and then open it in your browser.  
 If it disallows the installation then proceed to method 2.
 
-### Method 2 - Script injection:
+### Method 2 - Script manager extention:
 Go ahead and install a script manager extention of your choice e.g. [Tampermonkey](https://chrome.google.com/webstore/detail/tampermonkey-beta/gcalenpjmijncebpfijmoaglllgpjagf).  
 Then create a new script and paste this code into the file (if useing Tampermonkey, other extentions may differ slightly).
 ```js
