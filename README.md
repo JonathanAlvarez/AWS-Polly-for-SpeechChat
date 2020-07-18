@@ -1,2 +1,2 @@
-# Twitch-TTS-Browser-Plugin
- Reads out twitch chat from the popout window
+# Twitch TTS Browser Extention
+Reads out twitch chat from the popout window

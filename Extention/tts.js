@@ -5,13 +5,14 @@ function testing()
 
 var messagesToRead = [];
 
-window.addEventListener("load", () =>
+function initialiseScript()
 {
     testing();
     createTTSPlayer();
     createVolumeSlider();
     handleRequests();
-});
+}
+initialiseScript();
 
 function handleRequests()
 {
