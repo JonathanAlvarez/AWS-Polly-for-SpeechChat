@@ -1,7 +1,7 @@
 # Twitch TTS Browser Extension
 Reads out twitch chat from the [popout window](https://www.twitch.tv/popout/kof_readie/chat).  
 [Here](https://gist.github.com/5E7EN/1fa2fd5edd7e0ee1b5606ba6cf6c2a1c) is some stuff you can do with Brian.  
-This should update automatically as the extension injects the javascript in this github repository to the twitch chat page.
+This should update automatically as the extension injects the [javascript in this github repository](https://github.com/kOFReadie/Twitch-TTS-Browser-Extension/blob/master/Extension/tts.js) to the twitch chat page.
 
 **If you notice that the TTS isn't working then go [here](https://api.streamelements.com/kappa/v2/speech?voice=Brian&text=Verifying%20that%20I%27m%20not%20a%20bot) and prove that you are not a robot.**
 
