@@ -1,7 +1,11 @@
-function testing()
+/*window.addEventListener("load", () => //For local testing
 {
-    
-}
+    //Delay helps prevent load errors
+    setTimeout(function()
+    {
+        initialiseScript();
+    }, 1000);
+});*/
 
 const urlParams = new URLSearchParams(location.search);
 var messagesToRead = [];
@@ -10,8 +14,7 @@ let ttsVoice;
 function initialiseScript()
 {
     ttsVoice = urlParams.has("voice") ? urlParams.get("voice") : "Brian";
-    
-    testing();
+
     createTTSPlayer();
     createVolumeSlider();
     handleRequests();
@@ -30,12 +33,12 @@ function handleRequests()
 
         let message = ""; //Create message to write into
 
-        //Loop through message divs
-        for(let i = 0; i < messageContainer.getElementsByClassName("text-fragment").length; i++)
+        //Loop through message elements
+        messageContainer.getElementsByClassName("message")[0].querySelectorAll("span,img").forEach(element =>
         {
-            message += messageContainer.getElementsByClassName("text-fragment")[i].innerHTML; //Adds text to the message
-            //ADD EMOTE READING
-        }
+            if (element.className == "text-fragment") { message += element.innerHTML; }
+            else if (element.className.includes("chat-image")) { message += element.alt; }
+        });
 
         messagesToRead.push(message); //Add message to TTS queue
 
