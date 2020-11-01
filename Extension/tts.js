@@ -1,178 +1,184 @@
-/*window.addEventListener("load", () => //For local testing
-{
-    //Delay helps prevent load errors
-    setTimeout(function()
-    {
-        initialiseScript();
-    }, 1000);
-});*/
-
+//DOM requires user to interact with the document first befor allowing .play() to be automatically triggered, auto unmute disabled.
 const urlParams = new URLSearchParams(location.search);
 var messagesToRead = [];
-let ttsVoice;
+let ttsEngine = "standard";
+let ttsVoice = "Brian";
+let allowScript = false;
 
+window.addEventListener("load", () => { _init(false); });
+
+function _init(manualFire)
+{
+    let timeout = manualFire ? 5000 : 500;
+    setTimeout(() =>
+    {
+        if (urlParams.has("region") && urlParams.has("IdentityPoolId"))
+        {
+            allowScript = true;
+
+            AWS.config.region = urlParams.get("region");
+            AWS.config.credentials = new AWS.CognitoIdentityCredentials({IdentityPoolId: urlParams.get("IdentityPoolId")});
+
+            let initTTS = setInterval(() =>
+            {
+                try
+                {
+                    document.body.click();
+                    initialiseScript();
+                    clearInterval(initTTS);
+                }
+                catch (error) { console.error(error); }
+            }, 1000);
+        }
+        else { console.log("%cregion or IdentityPoolId paramaters are missing, please provide these paramaters in order to use AWS Polly. If you do not know how to get these details check the documentation here: https://docs.aws.amazon.com/sdk-for-javascript/v2/developer-guide/getting-started-browser.html", "color: red"); }
+    }, timeout);
+}
+_init(true);
+
+let userInteracted = false;
+window.addEventListener("mousedown", () =>
+{
+    if (!userInteracted && allowScript)
+    {
+        userInteracted = true; window.removeEventListener("mousedown", this);
+
+        let muteAttempts = 0;
+        let mute = setInterval(() =>
+        {
+            let muteCheck = document.querySelector("#speech-checkbox");
+            if (muteCheck != null)
+            {
+                let voiceTab = muteCheck.parentElement.parentElement;
+                /*if (!muteCheck.checked) { muteCheck.click(); }
+                muteCheck.parentElement.parentElement.removeChild(muteCheck.parentElement);*/ //Fix auto disable
+                let pauseShortcutInput = document.querySelector("#pause_speech-hotkey-input");
+                for (let i = voiceTab.childElementCount; i > 1; i--) //Set to 0 when audio disable is fixed
+                { voiceTab.removeChild(voiceTab.childNodes[i]); }
+                voiceTab.removeChild(voiceTab.querySelector("#username-voice-select-div"));
+                pauseShortcutInput.parentElement.removeChild(pauseShortcutInput);
+                let appMenuControlPanel = document.querySelector("#app-menu-controlpanel-div").firstChild;
+                appMenuControlPanel.removeChild(appMenuControlPanel.childNodes[4]);
+                appMenuControlPanel.removeChild(appMenuControlPanel.childNodes[3]);
+                appMenuControlPanel.removeChild(appMenuControlPanel.childNodes[2]);
+                clearInterval(mute);
+            }
+            else if (muteAttempts >= 10) { clearInterval(muteAttempts); }
+            muteAttempts++;
+        }, 1000);
+    }
+});
+
+let initalised = false;
 function initialiseScript()
 {
-    ttsVoice = urlParams.has("voice") ? urlParams.get("voice") : "Brian";
-
-    createTTSPlayer();
-    createVolumeSlider();
-    handleRequests();
+    if (!initalised)
+    {
+        createTTSPlayer();
+        handleRequests();
+        ttsEngine = urlParams.has("Engine") ? urlParams.get("Engine") : "standard";
+        ttsVoice =  urlParams.has("Voice") ? urlParams.get("Voice") : "Brian";
+        initalised = true;
+    }
 }
-initialiseScript();
 
 function handleRequests()
 {
-    document.getElementsByClassName("chat-scrollable-area__message-container")[0].id = "chatContainer"; //Set ID on the chat container
-
     //Watch for added messages
     let observer = new MutationObserver((mutations) =>
     {
-        let numMessages = document.querySelectorAll(".chat-line__message").length; //Index nukber of messages
-        let messageContainer = document.getElementsByClassName("chat-line__message")[numMessages - 1]; //Get most recent message, GET SENDER NAME
-
-        let message = ""; //Create message to write into
-
-        //Loop through message elements
-        messageContainer.getElementsByClassName("message")[0].querySelectorAll("span,img").forEach(element =>
+        mutations.forEach(mutation =>
         {
-            if (element.className == "text-fragment") { message += element.innerHTML; }
-            else if (element.className.includes("chat-image")) { message += element.alt; }
+            mutation.addedNodes.forEach(node =>
+            {
+                let messageValid = false;
+                let validClasses = ["twitch-chat-li", "youtube-chat-li", "mixer-chat-li"];
+                let invalidClasses = ["chat-line-system-msg", "chat-line-event-msg", "youtube-sending-message"];
+                for (let i = 0; i < validClasses.length; i++) { if (node.classList.contains(validClasses[i])) { messageValid = true; }}
+                if (messageValid) { for (let i = 0; i < invalidClasses.length; i++) { if (node.classList.contains(invalidClasses[i])) { messageValid = false; break; }}}
+
+                if (messageValid)
+                {
+                    let message = { msg: node.querySelector(".chat-line-message"), image: 0 };
+                    message.text = message.msg.innerText.split(" ");
+                    message.images = message.msg.querySelectorAll("img");
+                    for (let i = 0; i < message.text.length; i++) { if (message.text[i] == "") { message.text[i] = message.images[message.image++].alt; }}
+                    messagesToRead.push(message.text.join(" "));
+
+                    if (messagesToRead.length <= 1) { synthesizeSpeech(); }
+                }
+            });
         });
-
-        messagesToRead.push(message); //Add message to TTS queue
-
-        if (messagesToRead.length <= 1) { playTTS(); } //Run TTS function if list was empty
     });
-    observer.observe(chatContainer, {childList: true}); //Watch for message updates
+    observer.observe(document.querySelector("#messages-ul"), {childList: true}); //Watch for message updates
 }
 
 //TTS
-async function playTTS()
+let ttsMuted = false;
+async function synthesizeSpeech()
 {
-    //Set TTS source to most recent message, ADD USER CUSTOMISATION
-    document.getElementById("source").setAttribute("src", "https://api.streamelements.com/kappa/v2/speech?voice=" + ttsVoice + "&text=" + encodeURIComponent(messagesToRead[0].trim()));
-    let audio = document.getElementById("audio");
-    audio.load();
-    audio.play();
+    var speechParams =
+    {
+        Engine: ttsEngine,
+        OutputFormat: "mp3",
+        SampleRate: "22050",
+        Text: messagesToRead[0],
+        TextType: "text",
+        VoiceId: ttsVoice
+    }
+
+    if (!ttsMuted && userInteracted)
+    {
+        var polly = new AWS.Polly({apiVersion: '2016-06-10'});
+        var signer = new AWS.Polly.Presigner(speechParams, polly);
+    
+        signer.getSynthesizeSpeechUrl(speechParams, function(error, url)
+        {
+            if (error) { console.log(`%c${error}`, "color: red"); }
+            else
+            {
+                document.querySelector("#source").src = url;
+                let player = document.querySelector("#audio");
+                player.load();
+                player.play();
+            }
+        });
+    }
+    else { messagesToRead.shift(); }
 }
 
+let firstPlayer = true;
 function createTTSPlayer()
 {
-    let mp3Player = document.createElement("audio");
-    let mp3Config = document.createElement("source");
-    mp3Player.style.display = "none";
-    mp3Player.id = "audio";
-    mp3Player.volume = 0.5;
-    mp3Config.id = "source";
-    mp3Player.appendChild(mp3Config);
-    document.body.appendChild(mp3Player);
-
-    //Remove previous TTS request and start next if list is not empty
-    mp3Player.addEventListener("ended", () =>
+    if (firstPlayer)
     {
-        messagesToRead.shift();
-        if (messagesToRead.length >= 1) { playTTS(); }
-    });
+        let pauseButton = document.querySelector("#pause-speech-button");
+        pauseButton.addEventListener("click", () =>
+        {
+            let buttonText = window.getComputedStyle(pauseButton, ":after").getPropertyValue("content");
+            if (buttonText == `" Pause speech"`) { ttsMuted = true; }
+            else { ttsMuted = false; }
+        });
 
-    //If there is a problem with the TTS, reload the page
-    mp3Player.addEventListener("error", (exception) =>
-    {
-        console.log(exception);
-        alert("You probable need to verify on the tts api that you are not a robot.");
-        window.open("https://api.streamelements.com/kappa/v2/speech?voice=Brian&text=Verifying%20that%20I%27m%20not%20a%20bot", "_blank");
-        location.reload();
-    });
-}
-
-function createVolumeSlider()
-{
-    var stylesheet = document.createElement("style");
-    var css = `
-    #volumeSliderContainer
-    {
-        width: 100px;
-        position: relative;
-        top: -2.5%;
-    }
-
-    #volumeSlider
-    {
-        position: absolute;
-        -webkit-appearance: none;
-        width: 100%;
-        height: 2.5px;
-        border-radius: 2.5px;
-        background-color: transparent;
-        outline: none;
-        -webkit-transition: .2s;
-        transition: opacity .2s;
-    }
-
-    #volumeSlider:hover
-    {
-        cursor: pointer;
-    }
+        let mp3Player = document.createElement("audio");
+        let mp3Config = document.createElement("source");
+        mp3Player.style.display = "none";
+        mp3Player.id = "audio";
+        mp3Player.volume = 1;
+        mp3Config.id = "source";
+        mp3Player.appendChild(mp3Config);
+        document.body.appendChild(mp3Player);
     
-    #volumeSlider::-webkit-slider-thumb
-    {
-        -webkit-appearance: none;
-        appearance: none;
-        width: 15px;
-        height: 15px;
-        border-radius: 50%; 
-        background: white;
-        cursor: pointer;
-    }
+        //Remove previous TTS request and start next if list is not empty
+        mp3Player.addEventListener("ended", () => { continueTTS() });
 
-    #volumeSliderWhole
-    {
-        position: absolute;
-        background-color: darkgray;
-        height: 2.5px;
-        width: 100%;
-        border-radius: 25.px;
-    }
+        mp3Player.addEventListener("error", (err) => { console.error(err); continueTTS(); })
 
-    #volumeSliderLeft
-    {
-        position: absolute;
-        background-color: white;
-        height: 2.5px;
-        width: 100%;
-        border-radius: 2.5px;
-    }
-    `;
-    
-    stylesheet.appendChild(document.createTextNode(css));
-    document.head.appendChild(stylesheet);
+        function continueTTS()
+        {
+            messagesToRead.shift();
+            if (messagesToRead.length >= 1) { synthesizeSpeech(); }
+        }
 
-    var volumeSliderContainer = document.createElement("div");
-    volumeSliderContainer.id = "volumeSliderContainer";
-
-    var volumeSlider = document.createElement("input");
-    volumeSlider.type = "range"
-    volumeSlider.min = 0;
-    volumeSlider.max = 100;
-    volumeSlider.value = 50;
-    volumeSlider.id = "volumeSlider";
-
-    var volumeSliderWhole = document.createElement("div");
-    volumeSliderWhole.id = "volumeSliderWhole"
-
-    var volumeSliderLeft = document.createElement("div");
-    volumeSliderLeft.id = "volumeSliderLeft"
-    volumeSliderLeft.style.width = volumeSlider.value + "%";
-
-    volumeSliderContainer.appendChild(volumeSliderWhole);
-    volumeSliderContainer.appendChild(volumeSliderLeft);
-    volumeSliderContainer.appendChild(volumeSlider);
-    var chatButtonsContainer = document.getElementsByClassName("chat-input__buttons-container")[0];
-    chatButtonsContainer.lastChild.insertBefore(volumeSliderContainer, chatButtonsContainer.lastChild.firstChild);
-
-    volumeSlider.oninput = function()
-    {
-        volumeSliderLeft.style.width = volumeSlider.value + "%";
-        document.getElementById("audio").volume = volumeSlider.value / 100;
+        firstPlayer = false;
     }
 }

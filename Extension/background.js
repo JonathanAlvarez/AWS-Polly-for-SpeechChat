@@ -8,7 +8,7 @@ chrome.browserAction.onClicked.addListener(function()
 	{
 		chrome.tabs.create(
 		{
-			"url": "https://github.com/kOFReadie/Twitch-TTS-Browser-Extension"
+			"url": "https://github.com/kOFReadie/AWS-Polly-for-SpeechChat"
 		});
 	});
 });
