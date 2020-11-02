@@ -28,7 +28,7 @@ Then create a new script and paste this code into the file (if using Tampermonke
 (function()
 {
     let inject_tts = document.createElement("script");
-    inject_tts.src = "https://dedi-readie.global-gaming.co/cdn/scripts/aws-polly-for-SpeechChat/Extension/inject.js";
+    inject_tts.src = "https://dedi-readie.global-gaming.co/cdn/scripts/aws-polly-for-speechchat/Extension/inject.js";
     document.body.appendChild(inject_tts);
 })();
 ```
