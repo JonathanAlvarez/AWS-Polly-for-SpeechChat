@@ -102,9 +102,12 @@ function handleRequests()
                     message.text = message.msg.innerText.split(" ");
                     message.images = message.msg.querySelectorAll("img");
                     for (let i = 0; i < message.text.length; i++) { if (message.text[i] == "") { message.text[i] = message.images[message.image++].alt; }}
-                    messagesToRead.push(message.text.join(" "));
-
-                    if (messagesToRead.length <= 1) { synthesizeSpeech(); }
+                    message = message.text.join(" ");
+                    if (!message.startsWith("!"))
+                    {
+                        messagesToRead.push(message);
+                        if (messagesToRead.length <= 1) { synthesizeSpeech(); }
+                    }
                 }
             });
         });
