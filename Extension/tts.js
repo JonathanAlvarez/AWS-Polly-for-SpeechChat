@@ -103,7 +103,9 @@ function handleRequests()
                     message.images = message.msg.querySelectorAll("img");
                     for (let i = 0; i < message.text.length; i++) { if (message.text[i] == "") { message.text[i] = message.images[message.image++].alt; }}
                     message = message.text.join(" ");
-                    if (!message.startsWith("!"))
+                    let blacklistedStarts = ["!", "whisper"];
+                    for (let i = 0; i < blacklistedStarts.length; i++) { if (message.startsWith(blacklistedStarts[i])) { messageValid = true; }}
+                    if (messageValid)
                     {
                         messagesToRead.push(message);
                         if (messagesToRead.length <= 1) { synthesizeSpeech(); }
