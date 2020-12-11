@@ -13,6 +13,7 @@ function inject()
 inject();
 
 //#region Manual injection
+//https://cdn.jsdelivr.net/gh/kOFReadie/AWS-Polly-for-SpeechChat/Extension/tts.js
 /*
     let inject_tts = document.createElement("script");
     inject_tts.src = "https://dedi-readie.global-gaming.co/cdn/scripts/aws-polly-for-speechchat/Extension/inject.js";
