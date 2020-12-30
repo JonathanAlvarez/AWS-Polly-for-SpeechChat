@@ -5,7 +5,7 @@ This tutorial was created from the steps on Amazon's [getting started](https://d
 If you need any help DM me on discord: `kOF.Readie#6594`.
 ## Step 1: Register a free AWS account
 In order to interact with AWS services you need to have setup a developer account, for personal use the free account is perfect.
-- Go to the [sign up](https://aws.amazon.com/free/) page and click on '`Create a Free Account`'.
+- Go to the [sign up](https://aws.amazon.com/free/) page and click on `Create a Free Account`.
 - Fill in your details: `Email address`, `Password`, `AWS Account name`
 - You will then be asked to fill in more information. We will want to set the account type to **Personal**, the rest of the information is for you to fill in by yourself.
 - **NOTE** You may be asked to fill out some credentials, this is to verify the AWS account to stop people abusing the free tiers, you will be charged $1 to verify the card and will be refunded in about a week. If you are not asked this, lucky you!
