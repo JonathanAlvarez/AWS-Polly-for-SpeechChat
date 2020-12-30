@@ -5,9 +5,9 @@ Reads out twitch, youtube and mixer chat from [SpeechChat](https://www.SpeechCha
 
 This should update automatically as the extension injects the [javascript in this github repository](https://github.com/kOFReadie/Twitch-TTS-Browser-Extension/blob/master/Extension/tts.js) to the SpeechChat website.
 
-**NOTE:** Due to initialization errors wait 5 seconds and then click on the page a few times to initalise the TTS, you should see that under the SpeechChat tab only the general and voice tabs are visible.
+**NOTE:** Due to initialization errors wait 5 seconds and then click on the page a few times to initalise the TTS, you should see that under the SpeechChat tab only the general and voice tabs are visible (I will work on a fix for this in the future).
 
-## **Installation:**
+# **Installation:**
 ### **Method 1** - CRX web extension:
 This is the easiest method to use, go and download my latest [release](https://github.com/kOFReadie/Twitch-TTS-Browser-Extension/releases/latest) and then open it in your browser.  
 If it disallows the installation then proceed to [method 2](#method-2---script-manager-extension).
@@ -33,15 +33,12 @@ Then create a new script and paste this code into the file (if using Tampermonke
 })();
 ```
 
-## **Parameters**:
-**These are case sensitive.**
+# **Parameters**:
+## **Need help setting up AWS first?**  
+Read [this tutorial](https://github.com/kOFReadie/AWS-Polly-for-SpeechChat/blob/master/AWS%20Setup.md) on how to setup AWS.
+
+**These parameters are case sensitive.**
 ### **region & IdentityPoolId (required)**:
-In order for this to work with the AWS Polly services you must supply a region and IdentityPoolId, these can be obtained by following this [AWS guide](https://docs.aws.amazon.com/sdk-for-javascript/v2/developer-guide/getting-started-browser.html) and following steps 1 and 2.
-The details you are looking for should look something like this:
-```js
-AWS.config.region = 'eu-west-2';
-AWS.config.credentials = new AWS.CognitoIdentityCredentials({IdentityPoolId: 'eu-west-2:2a6e81f2-****-****-****-76206049a562'});
-```
 Take the IdentityPoolId, replace the `:` with `%3A`, and region values and place them into the url like so: `?region=eu-west-2&IdentityPoolId=eu-west-2%3A2a6e81f2-****-****-****-76206049a562`
 
 ### **Voice**:
