@@ -18,7 +18,7 @@ Then create a new script and paste this code into the file (if using Tampermonke
 ```js
 // ==UserScript==
 // @name         AWS Polly for SpeechChat
-// @version      1.0
+// @version      1.1
 // @description  Reads out twitch, youtube and mixer chat from SpeechChat using AWS Polly.
 // @author       kOFReadie
 // @match        https://*.SpeechChat.com/*
@@ -28,7 +28,7 @@ Then create a new script and paste this code into the file (if using Tampermonke
 (function()
 {
     let inject_tts = document.createElement("script");
-    inject_tts.src = "https://dedi-readie.global-gaming.co/cdn/scripts/aws-polly-for-speechchat/Extension/inject.js";
+    inject_tts.src = "https://cdn.global-gaming.co/resources/scripts/aws-polly-for-speechchat/Extension/inject.js";
     document.body.appendChild(inject_tts);
 })();
 ```

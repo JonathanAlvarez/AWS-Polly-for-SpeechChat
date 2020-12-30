@@ -1,22 +1,13 @@
 function inject()
 {
     let aws = document.createElement("script");
-    aws.src = "https://dedi-readie.global-gaming.co/cdn/scripts/aws-sdk-2.783.0.min.js";
+    aws.src = "https://cdn.global-gaming.co/resources/scripts/aws-polly-for-speechchat/Extension/aws-sdk.min.js";
     document.body.appendChild(aws);
-    setTimeout(() => //Wait for AWS script to have initalised
+    setTimeout(() => //Wait for AWS script to have initalised, it shouldnt take more than 5s
     {
         let tts = document.createElement("script");
-        tts.src = "https://dedi-readie.global-gaming.co/cdn/scripts/aws-polly-for-speechchat/Extension/tts.js";
+        tts.src = "https://cdn.global-gaming.co/resources/scripts/aws-polly-for-speechchat/Extension/tts.js";
         document.body.appendChild(tts);
     }, 5000);
 }
 inject();
-
-//#region Manual injection
-//https://cdn.jsdelivr.net/gh/kOFReadie/AWS-Polly-for-SpeechChat/Extension/tts.js
-/*
-    let inject_tts = document.createElement("script");
-    inject_tts.src = "https://dedi-readie.global-gaming.co/cdn/scripts/aws-polly-for-speechchat/Extension/inject.js";
-    document.body.appendChild(inject_tts);
-*/
-//#endregion
