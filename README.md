@@ -1,4 +1,8 @@
 # AWS Polly for SpeechChat
+
+## Note:
+**This project has been archived and will not recieve any more updates in favour of the [Stream Tools](https://github.com/kOFReadie/Stream-Tools) project.**
+
 Reads out twitch, youtube and mixer chat from [SpeechChat](https://www.SpeechChat.com) using [AWS Polly](https://aws.amazon.com/polly/). 
 
 **Check out what sort of stuff you can do with it in this guide [here](https://github.com/kOFReadie/Twitch-TTS-Browser-Extension/TTS_Examples/).**
